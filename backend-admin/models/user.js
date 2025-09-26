@@ -50,6 +50,16 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: "user",
       },
+      profile: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      name: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return `${this.firstname} ${this.lastname}`;
+        },
+      },
     },
     {
       sequelize,
@@ -57,6 +67,7 @@ module.exports = (sequelize, DataTypes) => {
       hooks: {
         beforeSave: async (user) => {
           user.password = await bcrypt.hash(user.password, 10);
+          user.email = user.email.toLowerCase();
         },
       },
     }
