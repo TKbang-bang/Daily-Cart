@@ -2,11 +2,13 @@ const { User } = require("../../models");
 
 const getUserByEmail = async (email) => {
   try {
-    return await User.findOne({
+    const user = await User.findOne({
       where: {
         email,
       },
     });
+
+    return user;
   } catch (error) {
     throw error;
   }

@@ -4,7 +4,6 @@ import "./auth.css";
 import { signup } from "../services/auth.service";
 import { toast } from "sonner";
 import { SwitchIcon, DeleteIcon } from "../SVG/SVG";
-import { getAccessToken } from "../services/token.service";
 
 function Signup() {
   const [firstName, setFirstName] = useState("");
@@ -33,7 +32,6 @@ function Signup() {
       if (!sign.ok) throw new Error(sign.message);
 
       toast.success(sign.message);
-      console.log({ token: getAccessToken() });
       navigate("/");
     } catch (error) {
       return toast.error(error.message);

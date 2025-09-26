@@ -1,4 +1,4 @@
-const { signup } = require("../../controllers/auth.controller");
+const { signup, login } = require("../../controllers/auth.controller");
 const { profileUpload } = require("../../utils/multer");
 const { signupValidation } = require("../../middlewares/validations/auth");
 
@@ -10,5 +10,7 @@ authRoutes.post(
   signupValidation,
   signup
 );
+
+authRoutes.post("/login", login);
 
 module.exports = authRoutes;

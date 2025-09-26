@@ -16,6 +16,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
       });
     }
+
+    toJSON() {
+      const values = { ...this.get() };
+      delete values.password;
+      delete values.createdAt;
+      delete values.updatedAt;
+      return values;
+    }
   }
   User.init(
     {

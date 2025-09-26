@@ -45,13 +45,33 @@ export const signup = async (
     // setting the token
     setAccessToken(res.data.accessToken);
 
-    console.log(res.data);
-
     // if the request was successful
     return { ok: true, message: res.data.message || "User created" };
   } catch (error) {
     // if the request failed
-    console.log(error);
+    return {
+      ok: false,
+      message: error.response?.data?.message || error.message,
+    };
+  }
+};
+
+export const login = async (email, password, code) => {
+  try {
+    // check if all fields are filled
+    if (!email || !password || !code)
+      return { ok: false, message: "All fields are required" };
+
+    // sending the request
+    const res = await axios.post("/auth/login", { email, password, code });
+    if (res.status != 200) return { ok: false, message: res.data.message };
+
+    // setting the token
+    setAccessToken(res.data.accessToken);
+
+    // if the request was successful
+    return { ok: true, message: res.data.message || "User logged in" };
+  } catch (error) {
     return {
       ok: false,
       message: error.response?.data?.message || error.message,
