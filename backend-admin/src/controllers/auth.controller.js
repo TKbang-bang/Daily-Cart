@@ -12,11 +12,12 @@ const signup = async (req, res, next) => {
     // credentials from the user
     const { firstName, lastName, email, password, code } = req.body;
 
-    // check if the user email is already in user
+    // check if the user email is already in use
     const userExists = await getUserByEmail(email);
     if (userExists)
       return next(new ServerError("Email is already in use", 409));
 
+    // signing up the user
     const user = await signingUp(
       firstName,
       lastName,
@@ -34,7 +35,6 @@ const signup = async (req, res, next) => {
     // sending tokens to the user
     return sendingCookieToken(res, accessToken, refreshToken);
   } catch (error) {
-    console.log(error);
     return next(new ServerError(error.message, 500));
   }
 };

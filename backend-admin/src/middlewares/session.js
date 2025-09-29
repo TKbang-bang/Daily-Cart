@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { createAccessToken, createRefreshToken } = require("../utils/token");
 const cookiesOption = require("../utils/cookiesOption");
+const ServerError = require("../Errors/errorClas");
 
 const sessionMiddleware = async (req, res, next) => {
   const accessToken = req.headers.authorization?.split(" ")[1];
@@ -8,7 +9,7 @@ const sessionMiddleware = async (req, res, next) => {
 
   // token verification
   if (!accessToken && !refreshToken)
-    return res.status(401).json({ message: "Unauthorized" });
+    return next(new ServerError("Unauthorized", 401));
 
   // if both tokens are present, verify access token first
   if (accessToken) {
@@ -20,7 +21,7 @@ const sessionMiddleware = async (req, res, next) => {
 
       return next();
     } catch (error) {
-      console.log("Invalid access token", error);
+      console.log("Invalid access token");
     }
   }
 
@@ -41,8 +42,8 @@ const sessionMiddleware = async (req, res, next) => {
 
       return next();
     } catch (error) {
-      console.log("Invalid refresh token", error);
-      return res.status(401).json({ message: "Invalid refresh token" });
+      // console.log("Invalid refresh token");
+      return next(new ServerError("Invalid refresh token", 401));
     }
   }
 };

@@ -5,18 +5,21 @@ import Login from "./auth/Login.jsx";
 import Signup from "./auth/Signup.jsx";
 import axios from "axios";
 import { Toaster } from "sonner";
+import { sessionCheck } from "./services/session.service.js";
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = `${import.meta.env.VITE_SERVER_URL}`;
 
 function App() {
-  const [ok, setOk] = React.useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        if (!ok) throw new Error("You are not logged in");
+        const check = await sessionCheck();
+        if (!check.ok) throw new Error(check.message);
+
+        return;
       } catch (error) {
         if (
           window.location.pathname !== "/login" &&

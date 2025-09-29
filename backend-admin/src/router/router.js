@@ -1,9 +1,12 @@
+const sessionMiddleware = require("../middlewares/session");
 const authRoutes = require("./routes/auth.routes");
+const protectedRoutes = require("./routes/protected.routes");
 
 const router = require("express").Router();
 
+// auth routes
 router.use("/auth", authRoutes);
-
-router.get("/hello", (req, res) => res.send("Hello World!"));
+// protected routes
+router.use("/protected", sessionMiddleware, protectedRoutes);
 
 module.exports = router;
