@@ -1,22 +1,18 @@
 import React from "react";
-// import { sessionCheck, sessionCheckApi } from "../services/session.service";
+import { Route, Routes } from "react-router-dom";
 
 function Home() {
-  // const handleSession = async () => {
-  //   try {
-  //     const check = await sessionCheckApi();
-  // if (!check.ok) throw new Error(check.message);
-
-  //     return;
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   return (
-    <div>
+    <div className="home">
       <h1>Home</h1>
-      {/* <button onClick={handleSession}>Click</button> */}
+
+      <Routes>
+        <Route path="/products" element={<h1>Products</h1>} />
+        <Route path="/create" element={<h1>Create Products</h1>} />
+        <Route path="/orders" element={<h1>Orders</h1>} />
+        <Route path="/users" element={<h1>Users</h1>} />
+        <Route path="/logs" element={<h1>Logs</h1>} />
+      </Routes>
     </div>
   );
 }

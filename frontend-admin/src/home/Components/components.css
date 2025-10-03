@@ -1,0 +1,119 @@
+aside {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+
+  & .head {
+    width: 100%;
+    height: 6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    & a {
+      text-decoration: none;
+      color: var(--blue);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      & h1 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.1rem;
+        font-size: 1.8rem;
+
+        & p {
+          text-align: center;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        & span {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          & svg {
+            width: 1.8rem;
+            height: 1.8rem;
+            fill: var(--blue);
+          }
+        }
+      }
+    }
+  }
+
+  & .urls {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    padding-inline: 0.5rem;
+    gap: 0.2rem;
+    padding-block: 0.5rem;
+
+    & li {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      & a {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding-left: 1rem;
+        width: 100%;
+        text-decoration: none;
+        color: var(--blue);
+        height: 3rem;
+        gap: 0.5rem;
+        fill: var(--blue);
+        border-radius: 0.5rem;
+        transition: all 0.2s ease-in-out;
+
+        & svg {
+          fill: inherit;
+          width: 1.5rem;
+          height: 1.5rem;
+        }
+
+        &:hover {
+          background-color: var(--dark-blue);
+          color: #fff;
+          fill: #fff;
+        }
+
+        &.active {
+          background-color: var(--blue);
+          color: #fff;
+          fill: #fff;
+        }
+      }
+    }
+  }
+
+  & .logout {
+    width: 90%;
+    margin-bottom: 2rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background-color: var(--tomato);
+    color: #fff;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}

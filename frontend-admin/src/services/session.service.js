@@ -23,3 +23,17 @@ export const sessionCheck = async () => {
     };
   }
 };
+
+export const logout = async () => {
+  try {
+    const res = await api.get("/session/logout");
+    if (res.status != 204) return { ok: false, message: res.data.message };
+
+    return { ok: true, message: "User logged out" };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error.response?.data?.message || error.message,
+    };
+  }
+};

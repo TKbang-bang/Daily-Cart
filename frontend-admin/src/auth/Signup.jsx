@@ -32,7 +32,7 @@ function Signup() {
       if (!sign.ok) throw new Error(sign.message);
 
       toast.success(sign.message);
-      navigate("/");
+      navigate("/products");
     } catch (error) {
       return toast.error(error.message);
     }

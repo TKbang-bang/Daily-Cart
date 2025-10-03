@@ -17,8 +17,13 @@ const logout = async (req, res, next) => {
   try {
     req.userId = null;
 
-    res.clearCookie("refreshToken");
-    return res.status(200).json({ message: "You have logged out" });
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
+    });
+
+    return res.status(204).end();
   } catch (error) {
     return next(new ServerError(error.message, 500));
   }

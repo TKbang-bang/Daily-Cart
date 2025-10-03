@@ -18,7 +18,7 @@ function Login() {
       if (!res.ok) throw new Error(res.message);
 
       toast.success(res.message);
-      navigate("/");
+      navigate("/products");
     } catch (error) {
       return toast.error(error.message);
     }

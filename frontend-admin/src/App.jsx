@@ -6,6 +6,7 @@ import Signup from "./auth/Signup.jsx";
 import axios from "axios";
 import { Toaster } from "sonner";
 import { sessionCheck } from "./services/session.service.js";
+import Display from "./home/Display.jsx";
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = `${import.meta.env.VITE_SERVER_URL}`;
@@ -30,12 +31,13 @@ function App() {
     };
 
     checkAuth();
+    if (window.location.pathname === "/") navigate("/products");
   }, []);
 
   return (
     <>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="*" element={<Display />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
       </Routes>
