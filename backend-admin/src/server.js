@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const errorHandler = require("./Errors/errorHandler");
+const path = require("path");
 const router = require("./router/router");
 
 // creating express app
@@ -23,6 +24,7 @@ app.use(
   })
 );
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, "../public")));
 
 // routes
 app.use(router);

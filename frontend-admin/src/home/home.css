@@ -11,5 +11,47 @@
 
   & .home {
     grid-column: 3/11;
+
+    & header {
+      max-height: 15vh;
+      min-height: 15vh;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-inline: 1rem;
+
+      & h1 {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--blue);
+      }
+
+      & .user {
+        display: flex;
+        justify-content: reverse;
+        align-items: center;
+        flex-direction: row-reverse;
+        gap: 0.5rem;
+
+        & img {
+          width: 2.5rem;
+          height: 2.5rem;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+
+        & h3 {
+          font-size: 1rem;
+          color: var(--blue);
+        }
+      }
+    }
+
+    & > section {
+      height: 85svh;
+      max-height: 85svh;
+      overflow-y: auto;
+    }
   }
 }

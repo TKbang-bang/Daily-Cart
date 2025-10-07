@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     toJSON() {
       const values = { ...this.get() };
       delete values.password;
+      delete values.email;
       delete values.createdAt;
       delete values.updatedAt;
       return values;
