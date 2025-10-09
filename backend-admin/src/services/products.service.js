@@ -1,5 +1,5 @@
-const { Op, where } = require("sequelize");
-const { sequelize, Category, Product, Tag } = require("../../models");
+const { Op } = require("sequelize");
+const { sequelize, Category, Product, Tag, Log } = require("../../models");
 
 const creatingProduct = async ({
   name,
@@ -9,6 +9,7 @@ const creatingProduct = async ({
   stock,
   tags,
   filename,
+  userId,
 }) => {
   try {
     await sequelize.transaction(async (transaction) => {
@@ -56,10 +57,42 @@ const creatingProduct = async ({
 
         await product.addTag(tag, { transaction });
       }
+
+      await Log.create({
+        userId,
+        action: "created a product",
+      });
     });
   } catch (error) {
     throw error;
   }
 };
 
-module.exports = { creatingProduct };
+const gettingProducts = async () => {
+  try {
+    const products = await Product.findAll({
+      include: [
+        { model: Category, attributes: ["name"], as: "category" },
+        { model: Tag, attributes: ["name"], as: "tags" },
+      ],
+    });
+
+    const formattedProducts = products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      discount: product.discount,
+      stock: product.stock,
+      image: product.image,
+      category: product.category?.name || null,
+      tags: product.tags.map((tag) => tag.name),
+    }));
+
+    return formattedProducts;
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = { creatingProduct, gettingProducts };

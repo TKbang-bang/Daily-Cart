@@ -31,3 +31,17 @@ export const createProduct = async (
     };
   }
 };
+
+export const gettingProducts = async (to) => {
+  try {
+    const res = await api.get(`${to}`);
+    if (res.status != 200) return { ok: false, message: res.data.message };
+
+    return { ok: true, products: res.data.products };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error.response?.data?.message || error.message,
+    };
+  }
+};
