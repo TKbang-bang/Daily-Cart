@@ -45,3 +45,50 @@ export const gettingProducts = async (to) => {
     };
   }
 };
+
+export const gettingProductById = async (to) => {
+  try {
+    const res = await api.get(`${to}`);
+    if (res.status != 200) return { ok: false, message: res.data.message };
+
+    return { ok: true, product: res.data.product };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error.response?.data?.message || error.message,
+    };
+  }
+};
+
+export const updateProduct = async (
+  id,
+  name,
+  description,
+  category,
+  price,
+  discount,
+  stock,
+  tags
+) => {
+  try {
+    const allTags = tags.split(",").map((tag) => tag.trim());
+
+    const res = await api.put(`/products/${id}`, {
+      name,
+      description,
+      category,
+      price,
+      discount,
+      stock,
+      tags: allTags,
+    });
+    if (res.status != 200) return { ok: false, message: res.data.message };
+
+    return { ok: true, message: res.data.message };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error.response?.data?.message || error.message,
+    };
+  }
+};

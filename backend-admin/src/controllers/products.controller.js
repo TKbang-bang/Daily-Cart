@@ -2,12 +2,25 @@ const ServerError = require("../Errors/errorClas");
 const {
   creatingProduct,
   gettingProducts,
+  getProductById,
+  updatingProduct,
 } = require("../services/products.service");
+const { getUserById } = require("../services/user.service");
 
 const createProduct = async (req, res, next) => {
   try {
+    // file from the user
     const { filename } = req.file;
+    // product details
     const { name, description, category, price, stock, tags } = req.body;
+
+    // verifying if the user is allowed to create a product
+    const user = await getUserById(req.userId);
+    if (!user) return next(new ServerError("User not found", 404));
+    if (user.role != "admin" && user.role != "moderator")
+      return next(
+        new ServerError("You are not allowed to create a product", 403)
+      );
 
     await creatingProduct({
       name,
@@ -27,11 +40,37 @@ const createProduct = async (req, res, next) => {
   }
 };
 
+const UpdateProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, description, category, price, discount, stock, tags } =
+      req.body;
+
+    const product = await updatingProduct({
+      id,
+      name,
+      description,
+      category,
+      price,
+      discount,
+      stock,
+      tags,
+      userId: req.userId,
+    });
+
+    console.log(product);
+    if (!product.ok) return next(new ServerError(product.message, 400));
+
+    return res.status(200).json({ message: "Product updated" });
+  } catch (error) {
+    console.log(error);
+    return next(new ServerError(error.message, 500));
+  }
+};
+
 const getProducts = async (req, res, next) => {
   try {
     const products = await gettingProducts();
-
-    console.log({ products });
 
     return res.status(200).json({ products });
   } catch (error) {
@@ -39,4 +78,16 @@ const getProducts = async (req, res, next) => {
   }
 };
 
-module.exports = { createProduct, getProducts };
+const getProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const product = await getProductById(id);
+
+    return res.status(200).json({ product });
+  } catch (error) {
+    return next(new ServerError(error.message, 500));
+  }
+};
+
+module.exports = { createProduct, getProducts, getProduct, UpdateProduct };

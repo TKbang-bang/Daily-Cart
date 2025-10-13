@@ -19,7 +19,7 @@ app.use(
   cors({
     origin: `${process.env.CLIENT_URL}`,
     credentials: true,
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     exposedHeaders: ["access-token"],
   })
 );

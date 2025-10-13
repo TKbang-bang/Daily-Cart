@@ -70,6 +70,7 @@ function CreateProducts() {
           <input
             type="file"
             id="file"
+            accept="image/*"
             onChange={handleFileChange}
             ref={fileRef}
           />

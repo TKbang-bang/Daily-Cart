@@ -55,6 +55,7 @@
 
       & .red {
         color: var(--tomato);
+        text-decoration: line-through;
       }
     }
   }
