@@ -3,6 +3,7 @@ import { OrdersIcon, SearchIcon } from "../../SVG/SVG";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Products from "./components/Products";
 import Search from "./Search";
+import "./views.css";
 
 function ProductsContainer() {
   const [search, setSearch] = useState("");

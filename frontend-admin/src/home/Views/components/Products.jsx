@@ -24,9 +24,15 @@ function Products({ to }) {
 
   return (
     <div className="products">
-      {products.map((product) => (
-        <Product key={product.id} product={product} />
-      ))}
+      {products && products.length > 0 ? (
+        <>
+          {products.map((product) => (
+            <Product key={product.id} product={product} />
+          ))}
+        </>
+      ) : (
+        <p>No products found</p>
+      )}
     </div>
   );
 }

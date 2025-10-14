@@ -1,4 +1,4 @@
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 const { sequelize, Category, Product, Tag, Log } = require("../../models");
 
 const creatingProduct = async ({
@@ -80,9 +80,11 @@ const updatingProduct = async ({
   userId,
 }) => {
   try {
+    // upadating the product using transaction
     const result = await sequelize.transaction(async (transaction) => {
+      // declaring variables for category id
       let categoryId;
-      // creating category
+      // getting category
       const getCategory = await Category.findOne({
         where: {
           name: { [Op.iLike]: category },
@@ -90,14 +92,17 @@ const updatingProduct = async ({
         transaction,
       });
       if (!getCategory) {
+        // creating category
         const newCategory = await Category.create(
           { name: category },
           {
             transaction,
           }
         );
+        // assigning category id
         categoryId = newCategory.id;
       } else {
+        // assigning category id
         categoryId = getCategory.id;
       }
 
@@ -108,8 +113,19 @@ const updatingProduct = async ({
       if (!product)
         return { ok: false, message: "Product not found", status: 404 };
 
+      // checking if the discount is greater than or equal to the price
+      if (discount && discount >= price) {
+        return {
+          ok: false,
+          message: "Discount can't be greater than or equal to the price",
+          status: 400,
+        };
+      }
+
+      // assigning discount
       let discountValue = discount > 0 ? discount : null;
 
+      // updating product
       await product.update(
         {
           name,
@@ -124,7 +140,7 @@ const updatingProduct = async ({
         }
       );
 
-      // creating products tags
+      // creating or updating products tags
       for (let tagName of tags) {
         const [tag] = await Tag.findOrCreate({
           where: { name: tagName },
@@ -134,6 +150,7 @@ const updatingProduct = async ({
         await product.addTag(tag, { transaction });
       }
 
+      // creating logs
       await Log.create({
         userId,
         action: "updated a product",
@@ -200,9 +217,34 @@ const getProductById = async (id) => {
   }
 };
 
+const searchingProduct = async (word) => {
+  try {
+    const products = await Product.findAll({
+      where: {
+        [Op.or]: [
+          { name: { [Op.iLike]: `%${word}%` } },
+          { "$category.name$": { [Op.iLike]: `%${word}%` } },
+          { "$tags.name$": { [Op.iLike]: `%${word}%` } },
+        ],
+      },
+      include: [
+        { model: Category, as: "category", attributes: ["name"] },
+        { model: Tag, as: "tags", attributes: ["name"] },
+      ],
+      distinct: true,
+    });
+
+    return products;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 module.exports = {
   creatingProduct,
   gettingProducts,
   getProductById,
   updatingProduct,
+  searchingProduct,
 };

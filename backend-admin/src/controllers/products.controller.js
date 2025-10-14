@@ -4,6 +4,7 @@ const {
   gettingProducts,
   getProductById,
   updatingProduct,
+  searchingProduct,
 } = require("../services/products.service");
 const { getUserById } = require("../services/user.service");
 
@@ -42,10 +43,20 @@ const createProduct = async (req, res, next) => {
 
 const UpdateProduct = async (req, res, next) => {
   try {
+    // product details
     const { id } = req.params;
     const { name, description, category, price, discount, stock, tags } =
       req.body;
 
+    // check if the user is allowed to update a product
+    const user = await getUserById(req.userId);
+    if (!user) return next(new ServerError("User not found", 404));
+    if (user.role != "admin" && user.role != "moderator")
+      return next(
+        new ServerError("You are not allowed to update a product", 403)
+      );
+
+    // updating product
     const product = await updatingProduct({
       id,
       name,
@@ -57,9 +68,8 @@ const UpdateProduct = async (req, res, next) => {
       tags,
       userId: req.userId,
     });
-
-    console.log(product);
-    if (!product.ok) return next(new ServerError(product.message, 400));
+    if (!product.ok)
+      return next(new ServerError(product.message, product.status));
 
     return res.status(200).json({ message: "Product updated" });
   } catch (error) {
@@ -90,4 +100,22 @@ const getProduct = async (req, res, next) => {
   }
 };
 
-module.exports = { createProduct, getProducts, getProduct, UpdateProduct };
+const searchProduct = async (req, res, next) => {
+  try {
+    const { word } = req.params;
+
+    const products = await searchingProduct(word);
+
+    return res.status(200).json({ products });
+  } catch (error) {
+    return next(new ServerError(error.message, 500));
+  }
+};
+
+module.exports = {
+  createProduct,
+  getProducts,
+  getProduct,
+  UpdateProduct,
+  searchProduct,
+};
