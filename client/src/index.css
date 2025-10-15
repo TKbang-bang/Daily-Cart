@@ -1,0 +1,22 @@
+:root {
+  --dark: #19183b;
+  --dark-blue: #367fa9;
+  --blue: #3c8dbc;
+  --pale-blue: #00c0ef;
+  --white: #f0f0f0;
+  --tomato: #f56954;
+
+  font-family: "Josefin Sans", sans-serif;
+  font-optical-sizing: auto;
+  /* font-weight: 400; */
+  font-style: normal;
+
+  background-color: var(--white);
+  color: var(--dark);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
