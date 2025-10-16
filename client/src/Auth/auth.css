@@ -1,5 +1,6 @@
 .auth {
   height: 100svh;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -62,6 +63,36 @@
       color: var(--dark-blue);
       text-decoration: underline;
       font-weight: bold;
+    }
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .auth {
+    /* background: url("/shop-mobile.jpg") no-repeat center center fixed; */
+    padding-inline: 2rem;
+
+    & form {
+      width: 100%;
+      max-width: 25rem;
+
+      & input {
+        width: 100%;
+      }
+
+      & button {
+        width: 100%;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .auth {
+    padding-inline: 1.5rem;
+
+    & form {
+      max-width: 100%;
     }
   }
 }
