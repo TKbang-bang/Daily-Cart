@@ -241,10 +241,39 @@ const searchingProduct = async (word) => {
   }
 };
 
+const gettingProductsCategories = async () => {
+  try {
+    const categories = await Category.findAll();
+
+    return categories;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const gettingProductsByCategory = async (category) => {
+  try {
+    const products = await Product.findAll({
+      where: {
+        "$category.name$": {
+          [Op.iLike]: `%${category}%`,
+        },
+      },
+      include: [{ model: Category, as: "category", attributes: ["name"] }],
+    });
+
+    return products;
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   creatingProduct,
   gettingProducts,
   getProductById,
   updatingProduct,
   searchingProduct,
+  gettingProductsCategories,
+  gettingProductsByCategory,
 };

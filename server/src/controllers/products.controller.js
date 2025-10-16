@@ -5,6 +5,8 @@ const {
   getProductById,
   updatingProduct,
   searchingProduct,
+  gettingProductsCategories,
+  gettingProductsByCategory,
 } = require("../services/products.service");
 const { getUserById } = require("../services/user.service");
 
@@ -100,6 +102,28 @@ const getProduct = async (req, res, next) => {
   }
 };
 
+const getProductsCategories = async (req, res, next) => {
+  try {
+    const categories = await gettingProductsCategories();
+
+    return res.status(200).json({ categories });
+  } catch (error) {
+    return next(new ServerError(error.message, 500));
+  }
+};
+
+const getPorductsByCategory = async (req, res, next) => {
+  try {
+    const { category } = req.params;
+
+    const products = await gettingProductsByCategory(category);
+
+    return res.status(200).json({ products });
+  } catch (error) {
+    return next(new ServerError(error.message, 500));
+  }
+};
+
 const searchProduct = async (req, res, next) => {
   try {
     const { word } = req.params;
@@ -118,4 +142,6 @@ module.exports = {
   getProduct,
   UpdateProduct,
   searchProduct,
+  getProductsCategories,
+  getPorductsByCategory,
 };
