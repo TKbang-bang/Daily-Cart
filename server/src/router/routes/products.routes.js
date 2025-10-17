@@ -6,6 +6,7 @@ const {
   searchProduct,
   getProductsCategories,
   getPorductsByCategory,
+  cartManagement,
 } = require("../../controllers/products.controller");
 const { productsUpload } = require("../../utils/multer");
 
@@ -18,5 +19,6 @@ productsRoutes.get("/categories", getProductsCategories);
 productsRoutes.get("/categories/:category", getPorductsByCategory);
 productsRoutes.get("/:id", getProduct);
 productsRoutes.get("/search/:word", searchProduct);
+productsRoutes.post("/cart/:id", cartManagement);
 
 module.exports = productsRoutes;

@@ -1,5 +1,12 @@
-const { Op, where } = require("sequelize");
-const { sequelize, Category, Product, Tag, Log } = require("../../models");
+const { Op, where, fn } = require("sequelize");
+const {
+  sequelize,
+  Category,
+  Product,
+  Tag,
+  Log,
+  Cart,
+} = require("../../models");
 
 const creatingProduct = async ({
   name,
@@ -165,9 +172,24 @@ const updatingProduct = async ({
   }
 };
 
-const gettingProducts = async () => {
+const gettingProducts = async (userId) => {
   try {
     const products = await Product.findAll({
+      attributes: [
+        "id",
+        "name",
+        "description",
+        "price",
+        "discount",
+        "stock",
+        "image",
+        [
+          sequelize.literal(
+            `(SELECT COUNT(*) FROM "Carts" WHERE "Carts"."productId" = "Product"."id" AND "Carts"."userId" = '${userId}')`
+          ),
+          "inCart",
+        ],
+      ],
       include: [
         { model: Category, attributes: ["name"], as: "category" },
         { model: Tag, attributes: ["name"], as: "tags" },
@@ -184,6 +206,7 @@ const gettingProducts = async () => {
       image: product.image,
       category: product.category?.name || null,
       tags: product.tags.map((tag) => tag.name),
+      inCart: Number(product.get("inCart")) > 0,
     }));
 
     return formattedProducts;
@@ -192,9 +215,24 @@ const gettingProducts = async () => {
   }
 };
 
-const getProductById = async (id) => {
+const getProductById = async (userId, productId) => {
   try {
-    const product = await Product.findByPk(id, {
+    const product = await Product.findByPk(productId, {
+      attributes: [
+        "id",
+        "name",
+        "description",
+        "price",
+        "discount",
+        "stock",
+        "image",
+        [
+          sequelize.literal(
+            `(SELECT COUNT(*) FROM "Carts" WHERE "Carts"."productId" = "Product"."id" AND "Carts"."userId" = '${userId}')`
+          ),
+          "inCart",
+        ],
+      ],
       include: [
         { model: Category, attributes: ["name"], as: "category" },
         { model: Tag, attributes: ["name"], as: "tags" },
@@ -211,13 +249,32 @@ const getProductById = async (id) => {
       image: product.image,
       category: product.category?.name || null,
       tags: product.tags.map((tag) => tag.name),
+      inCart: Number(product.get("inCart")) > 0,
     };
+    // const product = await Product.findByPk(id, {
+    //   include: [
+    //     { model: Category, attributes: ["name"], as: "category" },
+    //     { model: Tag, attributes: ["name"], as: "tags" },
+    //   ],
+    // });
+
+    // return {
+    //   id: product.id,
+    //   name: product.name,
+    //   description: product.description,
+    //   price: product.price,
+    //   discount: product.discount,
+    //   stock: product.stock,
+    //   image: product.image,
+    //   category: product.category?.name || null,
+    //   tags: product.tags.map((tag) => tag.name),
+    // };
   } catch (error) {
     throw error;
   }
 };
 
-const searchingProduct = async (word) => {
+const searchingProduct = async (userId, word) => {
   try {
     const products = await Product.findAll({
       where: {
@@ -227,6 +284,21 @@ const searchingProduct = async (word) => {
           { "$tags.name$": { [Op.iLike]: `%${word}%` } },
         ],
       },
+      attributes: [
+        "id",
+        "name",
+        "description",
+        "price",
+        "discount",
+        "stock",
+        "image",
+        [
+          sequelize.literal(
+            `(SELECT COUNT(*) FROM "Carts" WHERE "Carts"."productId" = "Product"."id" AND "Carts"."userId" = '${userId}')`
+          ),
+          "inCart",
+        ],
+      ],
       include: [
         { model: Category, as: "category", attributes: ["name"] },
         { model: Tag, as: "tags", attributes: ["name"] },
@@ -234,9 +306,19 @@ const searchingProduct = async (word) => {
       distinct: true,
     });
 
-    return products;
+    return products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      discount: product.discount,
+      stock: product.stock,
+      image: product.image,
+      category: product.category?.name || null,
+      tags: product.tags.map((tag) => tag.name),
+      inCart: Number(product.get("inCart")) > 0,
+    }));
   } catch (error) {
-    console.error(error);
     throw error;
   }
 };
@@ -251,7 +333,7 @@ const gettingProductsCategories = async () => {
   }
 };
 
-const gettingProductsByCategory = async (category) => {
+const gettingProductsByCategory = async (userId, category) => {
   try {
     const products = await Product.findAll({
       where: {
@@ -259,10 +341,53 @@ const gettingProductsByCategory = async (category) => {
           [Op.iLike]: `%${category}%`,
         },
       },
+      attributes: [
+        "id",
+        "name",
+        "description",
+        "price",
+        "discount",
+        "stock",
+        "image",
+        [
+          sequelize.literal(
+            `(SELECT COUNT(*) FROM "Carts" WHERE "Carts"."productId" = "Product"."id" AND "Carts"."userId" = '${userId}')`
+          ),
+          "inCart",
+        ],
+      ],
       include: [{ model: Category, as: "category", attributes: ["name"] }],
     });
 
-    return products;
+    return products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      discount: product.discount,
+      stock: product.stock,
+      image: product.image,
+      category: product.category?.name || null,
+      inCart: Number(product.get("inCart")) > 0,
+    }));
+  } catch (error) {
+    throw error;
+  }
+};
+
+const AddOrRemoveToCart = async (userId, productId) => {
+  try {
+    const existing = await Cart.findOne({
+      where: { userId, productId },
+    });
+
+    if (!existing) {
+      await Cart.create({ userId, productId });
+      return { created: true };
+    } else {
+      await Cart.destroy({ where: { userId, productId } });
+      return { created: false };
+    }
   } catch (error) {
     throw error;
   }
@@ -276,4 +401,5 @@ module.exports = {
   searchingProduct,
   gettingProductsCategories,
   gettingProductsByCategory,
+  AddOrRemoveToCart,
 };

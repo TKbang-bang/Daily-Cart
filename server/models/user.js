@@ -15,6 +15,11 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Log, {
         foreignKey: "userId",
       });
+
+      User.hasMany(models.Cart, {
+        foreignKey: "userId",
+        as: "carts",
+      });
     }
 
     toJSON() {

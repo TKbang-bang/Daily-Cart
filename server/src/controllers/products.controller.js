@@ -7,6 +7,7 @@ const {
   searchingProduct,
   gettingProductsCategories,
   gettingProductsByCategory,
+  AddOrRemoveToCart,
 } = require("../services/products.service");
 const { getUserById } = require("../services/user.service");
 
@@ -82,7 +83,7 @@ const UpdateProduct = async (req, res, next) => {
 
 const getProducts = async (req, res, next) => {
   try {
-    const products = await gettingProducts();
+    const products = await gettingProducts(req.userId);
 
     return res.status(200).json({ products });
   } catch (error) {
@@ -94,7 +95,7 @@ const getProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const product = await getProductById(id);
+    const product = await getProductById(req.userId, id);
 
     return res.status(200).json({ product });
   } catch (error) {
@@ -116,7 +117,7 @@ const getPorductsByCategory = async (req, res, next) => {
   try {
     const { category } = req.params;
 
-    const products = await gettingProductsByCategory(category);
+    const products = await gettingProductsByCategory(req.userId, category);
 
     return res.status(200).json({ products });
   } catch (error) {
@@ -128,9 +129,21 @@ const searchProduct = async (req, res, next) => {
   try {
     const { word } = req.params;
 
-    const products = await searchingProduct(word);
+    const products = await searchingProduct(req.userId, word);
 
     return res.status(200).json({ products });
+  } catch (error) {
+    return next(new ServerError(error.message, 500));
+  }
+};
+
+const cartManagement = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const addOrRemove = await AddOrRemoveToCart(req.userId, id);
+
+    return res.status(200).json({ added: addOrRemove.created });
   } catch (error) {
     return next(new ServerError(error.message, 500));
   }
@@ -144,4 +157,5 @@ module.exports = {
   searchProduct,
   getProductsCategories,
   getPorductsByCategory,
+  cartManagement,
 };
